@@ -1,0 +1,54 @@
+def gauss_jordan(matrix):
+    rows = len(matrix)
+    cols = len(matrix[0])
+
+    pivot_row = 0
+
+    for i in range(cols - 1):
+        # Pivoteo parcial
+        max_row = max(range(pivot_row, rows), key=lambda x: abs(matrix[x][i]))
+        matrix[pivot_row], matrix[max_row] = matrix[max_row], matrix[pivot_row]
+
+        # Verificar si el pivote es cercano a cero
+        if abs(matrix[pivot_row][i]) < 1e-10:
+            continue  # Saltar esta columna
+
+        # Normalización del pivote
+        pivot = matrix[pivot_row][i]
+        matrix[pivot_row] = [element / pivot for element in matrix[pivot_row]]
+
+        # Eliminación hacia adelante
+        for j in range(rows):
+            if j != pivot_row:
+                factor = matrix[j][i]
+                matrix[j] = [element - factor * pivot_elem for pivot_elem, element in zip(matrix[pivot_row], matrix[j])]
+
+        pivot_row += 1
+
+        # Verificar si se han alcanzado todas las filas
+        if pivot_row >= rows:
+            break
+
+    # Verificar si hay soluciones infinitas o sin solución
+    for i in range(pivot_row, rows):
+        if abs(matrix[i][-1]) > 1e-10:
+            raise ValueError("El sistema no tiene solución única")
+
+    return matrix
+
+# Ejemplo de uso
+matrix = [
+    [2, 3, 4, 10],
+    [1, -1, 1, 5],
+    [3, 4, 2, 14]
+]
+
+try:
+    result = gauss_jordan(matrix)
+
+    # Imprimir la solución
+    for row in result:
+        print(row[-1])
+
+except ValueError as e:
+    print(e)
